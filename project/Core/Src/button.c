@@ -10,7 +10,7 @@
 #define NUMBER_OF_BUTTON 	1
 #define RELEASE				1
 #define PRESSED				0
-#define LONG_PRESSED_TIME	200 // 2s
+#define LONG_PRESSED_TIME	300 // 3s
 
 
 struct {
@@ -33,14 +33,14 @@ void button_init(void) {
 		button[i].timer = LONG_PRESSED_TIME;
 	}
 	// port and pin were matched by hand
-	button[0].port = BUTTON_1_PORT;
-	button[0].pin = BUTTON_1;
+	button[0].port = BUTTON1_PORT;
+	button[0].pin = BUTTON1;
 }
 void button_read(void) {
 	for (unsigned i = 0; i < NUMBER_OF_BUTTON; i++) {
 		button[i].reg[0] = button[i].reg[1];
 		button[i].reg[1] = button[i].reg[2];
-		button[i].reg[2] = HAL_GPIO_ReadPin(BUTTON_1_PORT, BUTTON_1);
+		button[i].reg[2] = HAL_GPIO_ReadPin(button[0].port, button[0].pin);
 		if (button[i].reg[0] == button[i].reg[1]
 				&& button[i].reg[1] == button[i].reg[2]) {
 			if (button[i].reg[2] == PRESSED) {

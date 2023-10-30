@@ -6,15 +6,17 @@
  */
 
 #include"software_timer.h"
+
+#define NUMBER_OF_TIMER	2
 /*
  * bief: state --> timer is on or off
  * */
 struct {
 	bool state;
 	unsigned int count;
-} timer[2];
-/* timer[0]: to read button
- * timer[1]: to toggle led when being long pressed
+} timer[NUMBER_OF_TIMER];
+/* timer[0]: to scan 4 7-seg leds
+ * timer[1]: to display traffic led
  * */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	run_timer();
@@ -25,7 +27,7 @@ void set_timer(unsigned i, unsigned int time) {
 	timer[i].state = 1;
 }
 void run_timer(void) {
-	for (unsigned i = 0; i < 2; i++) {
+	for (unsigned i = 0; i < NUMBER_OF_TIMER; i++) {
 		if (timer[i].state) {
 			timer[i].count--;
 			if (timer[i].count <= 0) {

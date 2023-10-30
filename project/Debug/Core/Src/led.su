@@ -1,0 +1,10 @@
+../Core/Src/led.c:39:6:control_traffic_light	16	static
+../Core/Src/led.c:44:6:init_led	8	static
+../Core/Src/led.c:48:6:init_traffic_light	4	static
+../Core/Src/led.c:58:6:scan7SEG	8	static
+../Core/Src/led.c:64:6:update_led_buf	16	static
+../Core/Src/led.c:72:6:off_all7led	16	static
+../Core/Src/led.c:76:6:update7led	16	static
+../Core/Src/led.c:102:6:display	24	static
+../Core/Src/led.c:112:6:display7SEG	32	static
+../Core/Src/led.c:148:6:init7SEG	4	static

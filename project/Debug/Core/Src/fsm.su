@@ -1,1 +1,2 @@
-../Core/Src/fsm.c:16:6:button_fsm	8	static
+../Core/Src/fsm.c:32:6:fsm	4	static
+../Core/Src/fsm.c:78:6:button_fsm	8	static

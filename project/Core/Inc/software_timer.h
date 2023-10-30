@@ -13,8 +13,8 @@
 
 #define FREQUENCY_OF_TIM	1000 //Hz
 #define READ_BUTTON_TIME	10 //10ms
-
-#define TEST_TIME 1000
+#define SCAN_7SEGLED_TIME	50 //50ms
+#define ONE_SECOND			1000
 
 void set_timer(unsigned i, unsigned int time);
 void run_timer(void);
