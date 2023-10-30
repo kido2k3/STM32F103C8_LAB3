@@ -61,15 +61,15 @@ void scan7SEG(void){
 		idx_7led = 0;
 	}
 }
-void update_led_buf(uint8_t mode, uint8_t value) {
-	if (0 < mode && mode < 5 && 0 < value && value < 100) {
-		led_buffer[0] = mode / 10;
-		led_buffer[1] = mode % 10;
-		led_buffer[2] = value / 10;
-		led_buffer[3] = value % 10;
+void update_led_buf(uint8_t value1, uint8_t value2) {
+	if (0 < value1 && value1 < 100 && 0 < value2 && value2 < 100) {
+		led_buffer[0] = value1 / 10;
+		led_buffer[1] = value1 % 10;
+		led_buffer[2] = value2 / 10;
+		led_buffer[3] = value2 % 10;
 	}
 }
-void off_all7led() {
+void off_all7led(void) {
 	uint16_t pin = SEG7_1 | SEG7_2 | SEG7_3 | SEG7_4;
 	HAL_GPIO_WritePin(led.port, pin, 1);
 }

@@ -1,2 +1,6 @@
-../Core/Src/fsm.c:32:6:fsm	4	static
-../Core/Src/fsm.c:78:6:button_fsm	8	static
+../Core/Src/fsm.c:52:6:traffic_light_fsm	8	static
+../Core/Src/fsm.c:95:6:fsm_led	8	static
+../Core/Src/fsm.c:128:6:fsm	8	static
+../Core/Src/fsm.c:229:6:button0_fsm	8	static
+../Core/Src/fsm.c:268:6:button2_fsm	8	static
+../Core/Src/fsm.c:292:6:button1_fsm	8	static

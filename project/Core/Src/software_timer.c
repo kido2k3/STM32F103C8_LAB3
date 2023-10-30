@@ -7,7 +7,7 @@
 
 #include"software_timer.h"
 
-#define NUMBER_OF_TIMER	2
+#define NUMBER_OF_TIMER	4
 /*
  * bief: state --> timer is on or off
  * */
@@ -17,6 +17,8 @@ struct {
 } timer[NUMBER_OF_TIMER];
 /* timer[0]: to scan 4 7-seg leds
  * timer[1]: to display traffic led
+ * timer[2]: to read button
+ * timer[3]: to toggle led
  * */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	run_timer();

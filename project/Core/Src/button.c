@@ -7,11 +7,10 @@
 
 #include"button.h"
 
-#define NUMBER_OF_BUTTON 	1
+#define NUMBER_OF_BUTTON 	3
 #define RELEASE				1
 #define PRESSED				0
 #define LONG_PRESSED_TIME	300 // 3s
-
 
 struct {
 	bool reg[3];
@@ -23,8 +22,6 @@ struct {
 	uint16_t pin;
 } button[NUMBER_OF_BUTTON];
 
-
-
 void button_init(void) {
 	for (int i = 0; i < NUMBER_OF_BUTTON; i++) {
 		button[i].reg[0] = button[i].reg[1] = button[i].reg[2] = RELEASE;
@@ -35,12 +32,16 @@ void button_init(void) {
 	// port and pin were matched by hand
 	button[0].port = BUTTON1_PORT;
 	button[0].pin = BUTTON1;
+	button[1].port = BUTTON2_PORT;
+	button[1].pin = BUTTON2;
+	button[2].port = BUTTON3_PORT;
+	button[2].pin = BUTTON3;
 }
 void button_read(void) {
 	for (unsigned i = 0; i < NUMBER_OF_BUTTON; i++) {
 		button[i].reg[0] = button[i].reg[1];
 		button[i].reg[1] = button[i].reg[2];
-		button[i].reg[2] = HAL_GPIO_ReadPin(button[0].port, button[0].pin);
+		button[i].reg[2] = HAL_GPIO_ReadPin(button[i].port, button[i].pin);
 		if (button[i].reg[0] == button[i].reg[1]
 				&& button[i].reg[1] == button[i].reg[2]) {
 			if (button[i].reg[2] == PRESSED) {

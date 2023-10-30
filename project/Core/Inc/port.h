@@ -12,10 +12,14 @@
 
 // define input
 #define BUTTON1_PORT	GPIOA
-#define BUTTON1			GPIO_PIN_5
+#define BUTTON1			GPIO_PIN_7
+#define BUTTON2_PORT	GPIOA
+#define BUTTON2			GPIO_PIN_8
+#define BUTTON3_PORT	GPIOA
+#define BUTTON3			GPIO_PIN_9
 // define output
 #define LED1_PORT		GPIOA
-#define LED1			GPIO_PIN_6
+#define LED1			GPIO_PIN_10
 
 #define SEG7_PORT		GPIOB
 #define SEG7_A			GPIO_PIN_0
@@ -38,6 +42,8 @@
 #define TL_GREEN2		GPIO_PIN_4
 #define TL_YELLOW2		GPIO_PIN_5
 #define TL_RED2			GPIO_PIN_6
+#define LED1_PORT		GPIOA
+#define LED1			GPIO_PIN_10
 #define ERROR			0xff
 
 typedef uint8_t bool;
