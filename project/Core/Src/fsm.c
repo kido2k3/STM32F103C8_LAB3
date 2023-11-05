@@ -9,46 +9,46 @@
 
 enum {
 	release, pressed, long_pressed
-} button_st[3];
+} /*state variable of button*/button_st[3];
 
 enum {
-	state1, //normal state
-	state2,
-	state3,
-	state4,
-	state5,
-	state6,
-	state7,
-	state8,
-	state9,
-	state10,
-	state11,
-	state12,
-	state13
-} light_st = state1, light_pre_st = state1;
+	TRAFFIC_LIGHT,
+	RED_ADJUSTMENT,
+	YELLOW_ADJUSTMENT,
+	GREEN_ADJUSTMENT,
+	SET_VALUE,
+	INCREASE_BY_1,
+	INCREASE_BY_1_OVER_TIME
+}/*state variable of system*/light_st = TRAFFIC_LIGHT,
+/* previous state variable of system*/light_pre_st = TRAFFIC_LIGHT;
 enum {
-	RED_GREEN, RED_YELLOW, GREEN_RED, YELLOW_RED
-} tl_st = RED_GREEN;
+	RED_GREEN, RED_YELLOW, GREEN_RED, YELLOW_RED, UNEQUAL
+}/* state variable of traffic light*/ tl_st = RED_GREEN;
 enum {
 	ON, OFF
-} led_st;
-#define RED_TIME_INIT 	10
-#define GREEN_TIME_INIT 8
-#define YELLOW_TIME_INIT 2
+} /* state variable of single led*/led_st;
+#define RED_TIME_INIT 		10
+#define GREEN_TIME_INIT		8
+#define YELLOW_TIME_INIT 	2
 
-uint8_t red_time = RED_TIME_INIT;
-uint8_t green_time = GREEN_TIME_INIT;
-uint8_t yellow_time = YELLOW_TIME_INIT;
-uint8_t red_time_buffer = RED_TIME_INIT;
-uint8_t green_time_buffer = GREEN_TIME_INIT;
-uint8_t yellow_time_buffer = YELLOW_TIME_INIT;
-uint8_t traffic_light_timer1 = RED_TIME_INIT;
-uint8_t traffic_light_timer2 = GREEN_TIME_INIT;
+unsigned red_time = RED_TIME_INIT;
+unsigned green_time = GREEN_TIME_INIT;
+unsigned yellow_time = YELLOW_TIME_INIT;
+
+unsigned red_time_buffer = RED_TIME_INIT;
+unsigned green_time_buffer = GREEN_TIME_INIT;
+unsigned yellow_time_buffer = YELLOW_TIME_INIT;
+
+unsigned traffic_light_timer1 = RED_TIME_INIT;
+unsigned traffic_light_timer2 = GREEN_TIME_INIT;
 
 bool button0_fsm(void);
 bool button1_fsm(void);
 bool button2_fsm(void);
-
+/*
+ * @brief: 	finite state machine to control behavior of traffic light
+ * @para:	none
+ * @retval:	none*/
 void traffic_light_fsm(void) {
 	update_led_buf(traffic_light_timer1, traffic_light_timer2);
 	switch (tl_st) {
@@ -91,26 +91,32 @@ void traffic_light_fsm(void) {
 		break;
 	}
 }
-
+/*@brief:	state machine to blink led in 2Hz
+ * @para:	none
+ * @retval:	none*/
 void fsm_led(void) {
 	switch (led_st) {
 	case ON:
 		switch (light_st) {
-		case state2:
+		case RED_ADJUSTMENT:
+			//turn red led on
 			control_traffic_light(0, 1, 0, 0);
 			control_traffic_light(1, 1, 0, 0);
 			break;
-		case state3:
+		case YELLOW_ADJUSTMENT:
+			//turn yellow led on
 			control_traffic_light(0, 0, 1, 0);
 			control_traffic_light(1, 0, 1, 0);
 			break;
-		case state4:
+		case GREEN_ADJUSTMENT:
+			//turn green led on
 			control_traffic_light(0, 0, 0, 1);
 			control_traffic_light(1, 0, 0, 1);
 			break;
 		default:
 			break;
 		}
+		//transition state in 0.25s
 		if (!is_timer_on(3)) {
 			led_st = OFF;
 			set_timer(3, TOGGLE_TIME);
@@ -119,113 +125,161 @@ void fsm_led(void) {
 	case OFF:
 		control_traffic_light(0, 0, 0, 0);
 		control_traffic_light(1, 0, 0, 0);
+		//transition state in 0.25s
 		if (!is_timer_on(3)) {
 			led_st = ON;
 			set_timer(3, TOGGLE_TIME);
 		}
 	}
 }
-void fsm(void) {
-
-	if (!is_timer_on(1)) {
-		if (traffic_light_timer1 > 0)
-			traffic_light_timer1--;
-		if (traffic_light_timer2 > 0)
-			traffic_light_timer2--;
-		set_timer(1, ONE_SECOND);
+/**
+ * @brief  increase the time value based-on previous state (short-pressed)
+ * @param  None
+ * @retval None
+ */
+void increase_value(void) {
+	if (light_pre_st == RED_ADJUSTMENT) {
+		red_time_buffer++;
+		if (red_time_buffer >= 100) {
+			red_time_buffer = 0;
+		}
+	} else if (light_pre_st == YELLOW_ADJUSTMENT) {
+		yellow_time_buffer++;
+		if (yellow_time_buffer >= 100) {
+			yellow_time_buffer = 0;
+		}
+	} else if (light_pre_st == GREEN_ADJUSTMENT) {
+		green_time_buffer++;
+		if (green_time_buffer >= 100) {
+			green_time_buffer = 0;
+		}
 	}
+}
+
+/**
+ * @brief  Top-layer finite state machine
+ * @param  None
+ * @retval None
+ */
+void fsm(void) {
+	// scan 4 7-seg leds with 50ms
 	if (!is_timer_on(0)) {
-		if (light_st != state1 || red_time == green_time + yellow_time) {
+		if (light_st != TRAFFIC_LIGHT || red_time == green_time + yellow_time) {
 			scan7SEG();
 		} else {
 			off_all7led();
 		}
 		set_timer(0, SCAN_7SEGLED_TIME);
 	}
+
 	switch (light_st) {
-	case state1:
+	case TRAFFIC_LIGHT:
 		if (red_time != green_time + yellow_time) {
+			//off all leds
 			control_traffic_light(0, 0, 0, 0);
 			control_traffic_light(1, 0, 0, 0);
 		} else {
+			// decrease timer every 1s
+			if (!is_timer_on(1)) {
+				if (traffic_light_timer1 > 0)
+					traffic_light_timer1--;
+				if (traffic_light_timer2 > 0)
+					traffic_light_timer2--;
+				set_timer(1, ONE_SECOND);
+			}
 			traffic_light_fsm();
 		}
+		// transition mode function
 		button0_fsm();
 
 		break;
-	case state2:
-		if (light_pre_st != state6 && light_pre_st != state5) {
+	case RED_ADJUSTMENT:
+		// update buffer of red with the condition that previous state has to be different from changing-value states
+		if (light_pre_st != INCREASE_BY_1 && light_pre_st != SET_VALUE
+				&& light_pre_st != INCREASE_BY_1_OVER_TIME) {
 			red_time_buffer = red_time;
 		}
+		// update buffer of four 7-seg leds: value of red buffer and the mode (2)
 		update_led_buf(red_time_buffer, 2);
 		fsm_led();
+		// transition mode function
 		button0_fsm();
 		button1_fsm();
 		button2_fsm();
 
 		break;
-	case state3:
-		if (light_pre_st != state6 && light_pre_st != state5)
+	case YELLOW_ADJUSTMENT:
+		// update buffer of yellow with the condition that previous state has to be different from changing-value states
+		if (light_pre_st != INCREASE_BY_1 && light_pre_st != SET_VALUE
+				&& light_pre_st != INCREASE_BY_1_OVER_TIME)
 			yellow_time_buffer = yellow_time;
+		// update buffer of four 7-seg leds: value of yellow buffer and the mode (3)
 		update_led_buf(yellow_time_buffer, 3);
 		fsm_led();
+		// transition mode function
 		button0_fsm();
 		button1_fsm();
 		button2_fsm();
 
 		break;
-	case state4:
-		if (light_pre_st != state6 && light_pre_st != state5)
+	case GREEN_ADJUSTMENT:
+		// update buffer of green with the condition that previous state has to be different from changing-value states
+		if (light_pre_st != INCREASE_BY_1 && light_pre_st != SET_VALUE
+				&& light_pre_st != INCREASE_BY_1_OVER_TIME)
 			green_time_buffer = green_time;
+		// update buffer of four 7-seg leds: value of yellow buffer and the mode (4)
 		update_led_buf(green_time_buffer, 4);
 		fsm_led();
+		// transition mode function
 		button0_fsm();
 		button1_fsm();
 		button2_fsm();
 
 		break;
-	case state5:
-		if (light_pre_st == state2) {
+	case SET_VALUE:
+		// update the time value based-on previous state
+		if (light_pre_st == RED_ADJUSTMENT) {
 			red_time = red_time_buffer;
-		} else if (light_pre_st == state3) {
+		} else if (light_pre_st == YELLOW_ADJUSTMENT) {
 			yellow_time = yellow_time_buffer;
-		} else if (light_pre_st == state4) {
+		} else if (light_pre_st == GREEN_ADJUSTMENT) {
 			green_time = green_time_buffer;
 		}
+
 		light_st = light_pre_st;
-		light_pre_st = state5;
+		light_pre_st = SET_VALUE;
 		break;
-	case state6:
-		if (light_pre_st == state2) {
-			red_time_buffer++;
-		} else if (light_pre_st == state3) {
-			yellow_time_buffer++;
-		} else if (light_pre_st == state4) {
-			green_time_buffer++;
+	case INCREASE_BY_1:
+		// increase the time value based-on previous state (short-pressed)
+		increase_value();
+		light_st = light_pre_st;
+		light_pre_st = INCREASE_BY_1;
+		break;
+	case INCREASE_BY_1_OVER_TIME:
+		// increase the time value every 0.25s based-on previous state (short-pressed)
+		if (light_pre_st == RED_ADJUSTMENT) {
+			update_led_buf(red_time_buffer, 2);
+		} else if (light_pre_st == YELLOW_ADJUSTMENT) {
+			update_led_buf(yellow_time_buffer, 3);
+		} else if (light_pre_st == GREEN_ADJUSTMENT) {
+			update_led_buf(green_time_buffer, 4);
 		}
-		light_st = light_pre_st;
-		light_pre_st = state6;
+		if (!is_timer_on(4)) {
+			increase_value();
+			set_timer(4, INCREASE_TIME);
+		}
+		button1_fsm();
 		break;
-	case state7:
-
-		break;
-	case state8:
-
-		break;
-	case state9:
-
-		break;
-	case state10:
-
-		break;
-	case state11:
-
-		break;
-
 	default:
 		break;
 	}
 }
+/*
+ * @brief:	mode button fsm - 2 states
+ * @para:	none
+ * @retval:	1 - successful
+ * 			0 - fail
+ * */
 bool button0_fsm(void) {
 	switch (button_st[0]) {
 	case release:
@@ -233,17 +287,17 @@ bool button0_fsm(void) {
 			// to do
 			light_pre_st = light_st;
 			switch (light_st) {
-			case state1:
-				light_st = state2;
+			case TRAFFIC_LIGHT:
+				light_st = RED_ADJUSTMENT;
 				break;
-			case state2:
-				light_st = state3;
+			case RED_ADJUSTMENT:
+				light_st = YELLOW_ADJUSTMENT;
 				break;
-			case state3:
-				light_st = state4;
+			case YELLOW_ADJUSTMENT:
+				light_st = GREEN_ADJUSTMENT;
 				break;
-			case state4:
-				light_st = state1;
+			case GREEN_ADJUSTMENT:
+				light_st = TRAFFIC_LIGHT;
 				break;
 			default:
 				break;
@@ -261,17 +315,22 @@ bool button0_fsm(void) {
 		break;
 	default:
 		return 0;
-		break;
 	}
 	return 1;
 }
+/*
+ * @brief:	setting-value button fsm - 2 states
+ * @para:	none
+ * @retval:	1 - successful
+ * 			0 - fail
+ * */
 bool button2_fsm(void) {
 	switch (button_st[2]) {
 	case release:
 		if (is_button_pressed(2) == 1) {
 			// to do
 			light_pre_st = light_st;
-			light_st = state5;
+			light_st = SET_VALUE;
 			button_st[2] = pressed;
 		} else if (is_button_pressed(2) == ERROR)
 			return 0;
@@ -289,13 +348,19 @@ bool button2_fsm(void) {
 	}
 	return 1;
 }
+/*
+ * @brief:	increasing-value button fsm - 3 states
+ * @para:	none
+ * @retval:	1 - successful
+ * 			0 - fail
+ * */
 bool button1_fsm(void) {
 	switch (button_st[1]) {
 	case release:
 		if (is_button_pressed(1) == 1) {
 			// to do
 			light_pre_st = light_st;
-			light_st = state6;
+			light_st = INCREASE_BY_1;
 			button_st[1] = pressed;
 		} else if (is_button_pressed(1) == ERROR)
 			return 0;
@@ -311,9 +376,13 @@ bool button1_fsm(void) {
 		break;
 	case long_pressed:
 		// to do
-		light_pre_st = light_st;
-		light_st = state7;
+		if (light_st != INCREASE_BY_1_OVER_TIME) {
+			light_pre_st = light_st;
+			light_st = INCREASE_BY_1_OVER_TIME;
+		}
 		if (!is_button_pressed(1)) {
+			light_st = light_pre_st;
+			light_pre_st = INCREASE_BY_1_OVER_TIME;
 			button_st[1] = release;
 		}
 		break;

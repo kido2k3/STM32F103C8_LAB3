@@ -27,7 +27,7 @@ struct{
 	uint16_t red;
 } traffic_light[2];
 
-uint8_t led_buffer[NUMBER_OF_7_LED] = { 0, 1, 2, 3 };
+uint8_t led_buffer[NUMBER_OF_7_LED] = { 7,4,8,0 };
 unsigned idx_7led = 0;
 
 
@@ -36,6 +36,12 @@ void update7led(uint8_t i);
 void init_traffic_light(void);
 void init7SEG(void);
 
+
+/*
+ * @brief: 	display traffic light function
+ * @para:	i - id of traffic light
+ * 			red, yellow, green - state of red, yellow and green led (1: on, 0: off)
+ * @retval:	none*/
 void control_traffic_light(unsigned i, GPIO_PinState red, GPIO_PinState yellow, GPIO_PinState green){
 	HAL_GPIO_WritePin(traffic_light[i].port, traffic_light[i].red, !red);
 	HAL_GPIO_WritePin(traffic_light[i].port, traffic_light[i].green, !green);
@@ -45,6 +51,7 @@ void init_led(void){
 	init_traffic_light();
 	init7SEG();
 }
+
 void init_traffic_light(void){
 	traffic_light[0].port = TL_PORT1;
 	traffic_light[0].green = TL_GREEN1;
@@ -55,13 +62,21 @@ void init_traffic_light(void){
 	traffic_light[1].yellow=TL_YELLOW2;
 	traffic_light[1].red=TL_RED2;
 }
+/*
+ * @brief: 	call buffer function and increase id of 7-seg leds
+ * @para:	none
+ * @retval:	none*/
 void scan7SEG(void){
 	update7led(idx_7led++);
 	if(idx_7led >= 4){
 		idx_7led = 0;
 	}
 }
-void update_led_buf(uint8_t value1, uint8_t value2) {
+/*
+ * @brief: 	update buffer
+ * @para:	none
+ * @retval:	none*/
+void update_led_buf(unsigned value1, unsigned value2) {
 	if (0 < value1 && value1 < 100 && 0 < value2 && value2 < 100) {
 		led_buffer[0] = value1 / 10;
 		led_buffer[1] = value1 % 10;

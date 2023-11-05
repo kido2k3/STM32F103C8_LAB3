@@ -16,6 +16,7 @@
 #define SCAN_7SEGLED_TIME	50 //50ms
 #define ONE_SECOND			1000//1s
 #define TOGGLE_TIME			250
+#define INCREASE_TIME		250
 
 void set_timer(unsigned i, unsigned int time);
 void run_timer(void);

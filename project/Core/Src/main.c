@@ -94,6 +94,7 @@ int main(void) {
 	set_timer(1, ONE_SECOND);
 	set_timer(2, READ_BUTTON_TIME);
 	set_timer(3, TOGGLE_TIME);
+	set_timer(4, INCREASE_TIME);
 	init_led();
 	button_init();
 	/* USER CODE END 2 */
@@ -101,13 +102,13 @@ int main(void) {
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1) {
+		//read 3 buttons every 10ms
 		if (!is_timer_on(2)) {
 			button_read();
 			set_timer(2, READ_BUTTON_TIME);
 		}
-		//HAL_GPIO_WritePin(LED1_PORT, LED1, is_button_pressed(0));
+		//
 		fsm();
-
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
