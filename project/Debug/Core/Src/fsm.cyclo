@@ -1,7 +1,7 @@
-../Core/Src/fsm.c:46:6:traffic_light_fsm	9
-../Core/Src/fsm.c:89:6:fsm_led	9
-../Core/Src/fsm.c:122:6:increase_value	7
-../Core/Src/fsm.c:140:6:fsm	31
-../Core/Src/fsm.c:236:6:button0_fsm	10
-../Core/Src/fsm.c:275:6:button2_fsm	6
-../Core/Src/fsm.c:299:6:button1_fsm	11
+../Core/Src/fsm.c:52:6:traffic_light_fsm	9
+../Core/Src/fsm.c:97:6:fsm_led	9
+../Core/Src/fsm.c:140:6:increase_value	7
+../Core/Src/fsm.c:164:6:fsm	31
+../Core/Src/fsm.c:283:6:button0_fsm	10
+../Core/Src/fsm.c:327:6:button2_fsm	6
+../Core/Src/fsm.c:357:6:button1_fsm	11

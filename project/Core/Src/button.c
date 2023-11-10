@@ -61,7 +61,7 @@ void button_read(void) {
 		button[i].reg[2] = HAL_GPIO_ReadPin(button[i].port, button[i].pin);
 		if (button[i].reg[0] == button[i].reg[1]
 				&& button[i].reg[1] == button[i].reg[2]) {
-			//stable state, not bounce
+			//stable state, not bouncing
 			if (button[i].reg[2] == PRESSED) {
 				button[i].is_pressed = 1;
 				//decrease counter to toggle is_long_pressed flag

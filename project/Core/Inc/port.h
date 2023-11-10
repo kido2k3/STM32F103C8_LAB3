@@ -41,7 +41,7 @@
 #define TL_PORT2		GPIOA	//Traffic light 2nd
 #define TL_GREEN2		GPIO_PIN_4
 #define TL_YELLOW2		GPIO_PIN_5
-#define TL_RED2			GPIO_PIN_6
+#define TL_RED2			GPIO_PIN_11
 #define LED1_PORT		GPIOA
 #define LED1			GPIO_PIN_10
 #define ERROR			0xff

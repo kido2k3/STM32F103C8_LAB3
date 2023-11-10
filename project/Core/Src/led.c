@@ -9,6 +9,9 @@
 
 #define NUMBER_OF_7_LED 4
 
+/*
+ * bief: 7-segment led struct
+ * */
 struct {
 	GPIO_TypeDef *port;
 	uint16_t pin_a;
@@ -19,7 +22,9 @@ struct {
 	uint16_t pin_f;
 	uint16_t pin_g;
 } led;
-
+/*
+ * bief: traffic light struct
+ * */
 struct{
 	GPIO_TypeDef *port;
 	uint16_t green;
@@ -73,8 +78,9 @@ void scan7SEG(void){
 	}
 }
 /*
- * @brief: 	update buffer
- * @para:	none
+ * @brief: 	update buffer of 4 7-segment leds
+ * @para:	value1 < 100 for the 1st and 2nd led
+ * 			value2 < 100 for the 3rd and 4th led
  * @retval:	none*/
 void update_led_buf(unsigned value1, unsigned value2) {
 	if (0 < value1 && value1 < 100 && 0 < value2 && value2 < 100) {

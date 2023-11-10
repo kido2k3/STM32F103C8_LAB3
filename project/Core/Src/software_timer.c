@@ -9,7 +9,7 @@
 
 #define NUMBER_OF_TIMER	5
 /*
- * bief: state --> timer is on or off
+ * bief: state --> timer is on or off (1: on, 0: off)
  * */
 struct {
 	bool state;
@@ -21,14 +21,25 @@ struct {
  * timer[3]: to toggle led
  * timer[4]: to increase value by 1 over time
  * */
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	run_timer();
 }
-//time unit is ms
+/*
+ * @brief:	turn timer on and set value
+ * @para:	i: id of timer
+ * 			time: unit is ms
+ * @retval:	none
+ * */
 void set_timer(unsigned i, unsigned int time) {
 	timer[i].count = time * FREQUENCY_OF_TIM / 1000.0;
 	timer[i].state = 1;
 }
+/*
+ * @brief:	run all timers that is on
+ * @para:	none
+ * @retval:	none
+ * */
 void run_timer(void) {
 	for (unsigned i = 0; i < NUMBER_OF_TIMER; i++) {
 		if (timer[i].state) {
